@@ -1,101 +1,81 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
-class RegistrationForm extends Component {
-  constructor(props) {
-    super(props);
+const RegistrationForm = () => {
+  const [studentData, setStudentData] = useState({
+    name: '',
+    email: '',
+    courses: [],
+    universities: [],
+  });
 
-    this.state = {
-      name: '',
-      email: '',
-      selectedCourses: [],
-      selectedUniversities: [],
-    };
-  }
-
-  handleInputChange = (event) => {
-    const { name, value } = event.target;
-    this.setState({ [name]: value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setStudentData({ ...studentData, [name]: value });
   };
 
-  handleCourseSelection = (event) => {
-    const course = event.target.value;
-    const { selectedCourses } = this.state;
-
-    if (!selectedCourses.includes(course) && selectedCourses.length < 3) {
-      this.setState((prevState) => ({
-        selectedCourses: [...prevState.selectedCourses, course],
-      }));
+  const handleCourseChange = (e) => {
+    const { value } = e.target;
+    // Ensure at least three courses are selected
+    if (studentData.courses.length < 3) {
+      setStudentData({ ...studentData, courses: [...studentData.courses, value] });
     }
   };
 
-  handleUniversitySelection = (event) => {
-    const university = event.target.value;
-    const { selectedUniversities } = this.state;
-
-    if (!selectedUniversities.includes(university) && selectedUniversities.length < 3) {
-      this.setState((prevState) => ({
-        selectedUniversities: [...prevState.selectedUniversities, university],
-      }));
+  const handleUniversityChange = (e) => {
+    const { value } = e.target;
+    // Ensure at least three universities are selected
+    if (studentData.universities.length < 3) {
+      setStudentData({ ...studentData, universities: [...studentData.universities, value] });
     }
   };
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-  
-    console.log(this.state);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://3.90.145.92:8081/crmuniv/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(studentData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to register student');
+      }
+
+      const data = await response.json();
+      console.log(data); // Handle the response data as needed
+    } catch (error) {
+      console.error(error.message);
+    }
   };
 
-  render() {
-    return (
+  return (
+    <form onSubmit={handleSubmit}>
       <div>
-        <h1>Student Registration Form</h1>
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Name:
-            <input
-              type="text"
-              name="name"
-              value={this.state.name}
-              onChange={this.handleInputChange}
-            />
-          </label>
-          <br />
-          <label>
-            Email:
-            <input
-              type="email"
-              name="email"
-              value={this.state.email}
-              onChange={this.handleInputChange}
-            />
-          </label>
-          <br />
-          <label>
-            Select Courses (at least 3):
-            <select onChange={this.handleCourseSelection} multiple>
-              <option value="Course 1">Masters in Computer Science</option>
-              <option value="Course 2">Masters in Cyber Security</option>
-              <option value="Course 3">Masters in Software Engineering</option>
-              <option value="Course 4">Masters in Business Administration</option>
-            </select>
-          </label>
-          <br />
-          <label>
-            Select Universities (at least 3):
-            <select onChange={this.handleUniversitySelection} multiple>
-              <option value="University 1">University of Leeds</option>
-              <option value="University 2">University of Liverpool</option>
-              <option value="University 3">University of Leicester</option>
-              <option value="University 4">University of Northampton</option>
-
-            </select>
-          </label>
-          <br />
-          <button type="submit">Submit</button>
-        </form>
+        <label>Name:</label>
+        <input type="text" name="name" onChange={handleChange} required />
       </div>
-    );
-  }
-}
+      <div>
+        <label>Email:</label>
+        <input type="email" name="email" onChange={handleChange} required />
+      </div>
+      <div>
+        <label>Select Courses (At least 3):</label>
+        <select name="courses" onChange={handleCourseChange} multiple>
+          {/* Add course options here */}
+        </select>
+      </div>
+      <div>
+        <label>Select Universities (At least 3):</label>
+        <select name="universities" onChange={handleUniversityChange} multiple>
+          {/* Add university options here */}
+        </select>
+      </div>
+      <button type="submit">Register</button>
+    </form>
+  );
+};
 
 export default RegistrationForm;
