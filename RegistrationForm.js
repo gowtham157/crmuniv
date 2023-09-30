@@ -64,13 +64,19 @@ const RegistrationForm = () => {
       <div>
         <label>Select Courses (At least 3):</label>
         <select name="courses" onChange={handleCourseChange} multiple>
-          {/* Add course options here */}
+              <option value="Course 1">Masters in Computer Science</option>
+              <option value="Course 2">Masters in Cyber Security</option>
+              <option value="Course 3">Masters in Software Engineering</option>
+              <option value="Course 4">Masters in Business Administration</option>
         </select>
       </div>
       <div>
         <label>Select Universities (At least 3):</label>
         <select name="universities" onChange={handleUniversityChange} multiple>
-          {/* Add university options here */}
+			        <option value="University 1">University of Leeds</option>
+              <option value="University 2">University of Liverpool</option>
+              <option value="University 3">University of Leicester</option>
+              <option value="University 4">University of Northampton</option>
         </select>
       </div>
       <button type="submit">Register</button>
